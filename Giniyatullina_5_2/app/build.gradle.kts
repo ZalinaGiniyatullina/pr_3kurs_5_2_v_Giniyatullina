@@ -40,8 +40,11 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.10.1")
 
-    implementation("androidx.appcompat:appcompat:1.8.0")
-    implementation("com.google.android.material:material:1.14.0")
+    // Volley — HTTP-библиотека для запросов к API
+    implementation("com.android.volley:volley:1.2.1")
+
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.2")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")

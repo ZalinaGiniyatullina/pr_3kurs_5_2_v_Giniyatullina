@@ -14,25 +14,58 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         val auth = AuthManager(this)
-
-        if (auth.isLoggedIn()) {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-            return
-        }
-
         val etName = findViewById<EditText>(R.id.etName)
+        val etPassword = findViewById<EditText>(R.id.etPassword)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
 
         btnLogin.setOnClickListener {
             val name = etName.text.toString().trim()
+            val password = etPassword.text.toString()
+
+            var hasError = false
             if (name.isEmpty()) {
-                Toast.makeText(this, "Введите имя", Toast.LENGTH_SHORT).show()
-            } else {
-                auth.saveUser(User(name))
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
+                etName.error = "Введите имя"
+                hasError = true
+            }
+            if (password.isEmpty()) {
+                etPassword.error = "Введите пароль"
+                hasError = true
+            }
+            if (hasError) {
+                Toast.makeText(this, "Заполните имя и пароль", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val saved = auth.getUser()
+
+            when {
+                saved == null -> {
+                    auth.saveUser(User(name, password))
+                    enter(name)
+                }
+
+                saved.name == name && saved.password.isNullOrEmpty() -> {
+                    auth.saveUser(User(name, password))
+                    enter(name)
+                }
+
+                saved.name != name -> {
+                    etName.error = "Пользователь с таким именем не найден"
+                    Toast.makeText(this, "Неверное имя пользователя", Toast.LENGTH_SHORT).show()
+                }
+
+                saved.password != password -> {
+                    etPassword.error = "Неверный пароль"
+                    Toast.makeText(this, "Неверный пароль", Toast.LENGTH_SHORT).show()
+                }
+
+                else -> enter(name)
             }
         }
+    }
+
+    private fun enter(name: String) {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 }
